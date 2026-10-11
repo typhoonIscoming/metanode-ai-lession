@@ -1,0 +1,167 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* 深色交易终端配色 —— slate-950 底 + orange/green/red 高亮 */
+    --background: 222 47% 6%;
+    --foreground: 210 40% 96%;
+    --card: 222 32% 10%;
+    --card-foreground: 210 40% 96%;
+    --popover: 222 32% 8%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 24 95% 53%;            /* 橙色（BTC 主题色） */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 32% 14%;
+    --secondary-foreground: 210 40% 90%;
+    --muted: 222 32% 14%;
+    --muted-foreground: 215 15% 60%;
+    --accent: 222 32% 16%;
+    --accent-foreground: 210 40% 96%;
+    --destructive: 0 70% 55%;         /* 鲜红：做空信号 */
+    --destructive-foreground: 0 0% 100%;
+    --border: 222 25% 18%;
+    --input: 222 32% 14%;
+    --ring: 24 95% 53%;
+    --radius: 0.75rem;
+
+    /* 业务专用色 */
+    --bull: 160 80% 45%;              /* 翠绿：做多 */
+    --bear: 0 75% 60%;                /* 朱红：做空 */
+    --neutral: 220 15% 55%;
+  }
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-bull: hsl(var(--bull));
+  --color-bear: hsl(var(--bear));
+  --radius: var(--radius);
+}
+
+@layer base {
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -10%, hsl(24 95% 25% / 0.15), transparent),
+      radial-gradient(ellipse 50% 40% at 100% 0%, hsl(280 60% 30% / 0.10), transparent);
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  /* 表格数字单宽（对齐） */
+  .tabular-nums,
+  .font-mono,
+  table td,
+  table th {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* 全局选择高亮色 */
+  ::selection {
+    background-color: hsl(24 95% 53% / 0.3);
+    color: hsl(0 0% 100%);
+  }
+
+  /* 滚动条美化 */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(222 25% 22%);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(222 25% 30%);
+  }
+}
+
+/* === 动画 === */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 20px hsl(24 95% 53% / 0.0); }
+  50% { box-shadow: 0 0 30px hsl(24 95% 53% / 0.25); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-fade-up { animation: fade-up 0.4s ease-out backwards; }
+.animate-glow { animation: glow-pulse 3s ease-in-out infinite; }
+.animate-shimmer {
+  background: linear-gradient(110deg, transparent 30%, hsl(0 0% 100% / 0.08) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s linear infinite;
+}
+
+/* === 业务通用样式 === */
+.glass-card {
+  background: hsl(222 32% 10% / 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid hsl(222 25% 22% / 0.5);
+}
+
+.glow-orange {
+  box-shadow: 0 0 24px hsl(24 95% 53% / 0.2);
+}
+.glow-green {
+  box-shadow: 0 0 24px hsl(160 80% 45% / 0.2);
+}
+.glow-red {
+  box-shadow: 0 0 24px hsl(0 75% 60% / 0.2);
+}
+
+/* 表格行 hover 上浮 */
+.row-lift {
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+.row-lift:hover {
+  background-color: hsl(24 95% 53% / 0.04);
+}
+
+/* 状态徽章 */
+.state-watching {
+  background: linear-gradient(135deg, hsl(222 32% 22%), hsl(222 32% 18%));
+  color: hsl(215 15% 70%);
+  border: 1px solid hsl(222 25% 28%);
+}
+.state-long {
+  background: linear-gradient(135deg, hsl(160 80% 35%), hsl(160 80% 28%));
+  color: hsl(0 0% 100%);
+  border: 1px solid hsl(160 80% 45%);
+  box-shadow: 0 0 12px hsl(160 80% 45% / 0.35);
+}
+.state-short {
+  background: linear-gradient(135deg, hsl(0 70% 50%), hsl(0 70% 40%));
+  color: hsl(0 0% 100%);
+  border: 1px solid hsl(0 70% 60%);
+  box-shadow: 0 0 12px hsl(0 70% 60% / 0.35);
+}
+.state-expired {
+  background: hsl(222 32% 18%);
+  color: hsl(215 15% 50%);
+  border: 1px solid hsl(222 25% 22%);
+}

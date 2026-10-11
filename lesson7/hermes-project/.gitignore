@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+*.log
+
+# env / secrets
+.env
+.env.local
+.env.*.local
+
+# build / coverage
+dist/
+build/
+coverage/
+.nyc_output/
+
+# editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+
+# runtime data
+data/
+*.db

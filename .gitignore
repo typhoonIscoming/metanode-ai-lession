@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Tooling caches
+.ruff_cache/
+.pytest_cache/
+.mypy_cache/
+
+# Hook 运行时产物（来自 lesson2 演示）
+.tool-use.log
+
+# IDE
+.vscode/
+.idea/

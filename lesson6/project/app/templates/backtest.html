@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}回测 — QuantTrader{% endblock %}
+{% block content %}
+<h1>回测</h1>
+<p class="muted">基于历史 K 线一次性回放策略，输出夏普 / 最大回撤 / 胜率 / 累计收益 + 累计曲线。
+  填了起止时间会走「时间段」模式（缺数据时自动从 Binance 拉补，最多 200000 根）；否则按上面的「行数」回放最近 N 根。</p>
+
+{% if error_msg %}
+<div class="card" style="border-left: 4px solid #dc2626; background: #fef2f2; color: #991b1b; padding: 12px 16px; margin-bottom: 16px;">
+  <strong>⚠️ 出错了：</strong> {{ error_msg }}
+</div>
+{% endif %}
+
+<div class="card">
+  <form class="stack" method="post" action="/backtest">
+    <label>策略
+      <select name="strategy_name">
+        {% for name in strategies %}
+        <option value="{{ name }}" {% if request_strategy == name %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>交易对
+      <input name="symbol" value="{{ request_symbol or 'BTCUSDT' }}">
+    </label>
+    <label>周期
+      <select name="interval">
+        {% for iv in ["1m", "5m", "15m", "1h", "1d"] %}
+        <option value="{{ iv }}" {% if request_interval == iv %}selected{% endif %}>{{ iv }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>行数
+      <input name="limit" type="number" value="{{ request_limit or 100 }}">
+      <small class="hint">最近 N 根 K 线</small>
+    </label>
+    <label>起始时间
+      <input name="start_time" type="datetime-local" value="{{ request_start_time or '' }}">
+      <small class="hint">UTC，留空走「行数」模式</small>
+    </label>
+    <label>结束时间
+      <input name="end_time" type="datetime-local" value="{{ request_end_time or '' }}">
+      <small class="hint">UTC，留空走「行数」模式</small>
+    </label>
+    <label>参数 JSON
+      <input name="params" value='{{ request_params or "{}" }}'>
+      <small class="hint">留空用策略默认值</small>
+    </label>
+    <div class="form-footer" style="grid-column: 1 / -1;">
+      <button type="submit">开始回测</button>
+    </div>
+  </form>
+</div>
+
+{% if result %}
+<h2 style="margin-top: 24px;">回测结果</h2>
+<div class="metrics">
+  <div class="metric">
+    <div class="label">年化夏普</div>
+    <div class="value {% if result.sharpe >= 1 %}pnl-up{% elif result.sharpe < 0 %}pnl-down{% endif %}">
+      {{ "%.2f"|format(result.sharpe) }}
+    </div>
+    <div class="sub muted">{% if result.sharpe >= 1 %}风险调整后收益尚可{% else %}相对持有无显著优势{% endif %}</div>
+  </div>
+  <div class="metric">
+    <div class="label">最大回撤</div>
+    <div class="value pnl-down">{{ "%.2f%%"|format(result.max_drawdown * 100) }}</div>
+  </div>
+  <div class="metric">
+    <div class="label">信号触发胜率</div>
+    <div class="value">{{ "%.2f%%"|format(result.win_rate * 100) }}</div>
+  </div>
+  <div class="metric">
+    <div class="label">累计收益</div>
+    <div class="value {% if result.cumulative_return >= 0 %}pnl-up{% else %}pnl-down{% endif %}">
+      {% if result.cumulative_return >= 0 %}+{% endif %}{{ "%.2f%%"|format(result.cumulative_return * 100) }}
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <p>{{ result.summary }}</p>
+  <img class="chart" src="/static/{{ result.png_name }}" alt="累计收益曲线">
+</div>
+{% endif %}
+{% endblock %}

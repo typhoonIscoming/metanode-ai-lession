@@ -1,0 +1,8 @@
+{
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "teammateMode": "in-process",
+  "_comment_teammateMode": "可选值：'in-process'（默认，任何终端都能用）/ 'tmux'（split-pane，要 tmux 或 iTerm2）/ 'auto'（在 tmux session 里自动用 split-pane，否则 in-process）",
+  "_comment_merge": "把这段 merge 到你已有的 ~/.claude/settings.json，不要直接覆盖。已有内容比如 model / hooks / mcpServers 都保留。"
+}

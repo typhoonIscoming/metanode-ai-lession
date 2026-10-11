@@ -1,0 +1,43 @@
+# ~/.hermes/config.yaml 样例
+# Hermes Agent 配置文件，hermes setup 会自动生成，这里给一份手动编辑参考。
+
+# 默认使用的 LLM 提供商
+model:
+  provider: "anthropic"
+  default: "claude-opus-4-7"
+
+# 备用 provider 列表（已配置，会话内 /model 可切换）
+configured_providers:
+  - anthropic
+  - openai
+  - openrouter
+
+# 自定义本地 endpoint（可选，自托管模型用）
+custom_providers:
+  - name: local
+    base_url: http://localhost:8080/v1
+    # key_env: LOCAL_API_KEY  # 没有 key 就注释掉
+
+# 消息网关——本地默认只开 CLI
+gateways:
+  cli:
+    enabled: true
+  telegram:
+    enabled: false
+    # token_env: TELEGRAM_BOT_TOKEN  # 启用时去掉注释
+  discord:
+    enabled: false
+  slack:
+    enabled: false
+
+# 记忆系统
+memory:
+  enabled: true
+  fts5: true              # FTS5 全文搜索（跨会话回溯）
+  auto_summarize: true    # complex task 后 LLM 自动摘要
+
+# 技能系统
+skills:
+  enabled: true
+  auto_create: true       # complex task 后自动写 skill 到 ~/.hermes/skills/
+  hub_sync: false         # 不自动同步到 Skills Hub

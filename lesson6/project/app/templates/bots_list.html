@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}机器人 — QuantTrader{% endblock %}
+{% block content %}
+<div class="row justify-between" style="margin-bottom: 16px;">
+  <h1 style="margin: 0;">机器人</h1>
+</div>
+
+<details style="margin-bottom: 16px;">
+  <summary>新建机器人</summary>
+  <div class="card" style="margin-top: 8px;">
+    <form class="stack" method="post" action="/bots">
+      <label>名称 <input name="name" required placeholder="例：ma-btc-1h"></label>
+      <label>策略
+        <select name="strategy_name">
+          {% for s in strategies %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>交易对 <input name="symbol" value="BTCUSDT"></label>
+      <label>周期
+        <select name="interval">
+          {% for iv in ["1m","5m","15m","1h"] %}<option value="{{ iv }}">{{ iv }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>撮合
+        <select name="exchange">
+          <option value="paper">纸交易</option>
+          <option value="binance_testnet">币安测试网</option>
+        </select>
+      </label>
+      <label>初始资金 <input name="initial_capital" type="number" value="10000" step="any"></label>
+      <label>参数 JSON（留空用默认值）<input name="params" value="{}"></label>
+      <label>&nbsp;<button type="submit">创建</button></label>
+    </form>
+  </div>
+</details>
+
+<div id="bots-table" hx-get="/bots/partial" hx-trigger="every 5s" hx-swap="innerHTML">
+  {% include "partials/bots_table.html" %}
+</div>
+{% endblock %}

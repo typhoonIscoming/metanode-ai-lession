@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: web3career-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: web3career
+      POSTGRES_PASSWORD: web3career_dev
+      POSTGRES_DB: web3career
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U web3career -d web3career"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:

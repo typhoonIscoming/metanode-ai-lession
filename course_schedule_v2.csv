@@ -1,0 +1,48 @@
+﻿阶段,序号,课程,内容要点,周次,状态
+基础入门,1,AI 开发提效全景与工具对比,"1. 环境搭建：安装 Claude Code 和 Cursor
+2. 三种模式：聊天式 / IDE 内嵌 / 命令式 Agent
+3. 工具对比：Claude Code、Cursor、Codex 速览
+4. 现场演示：同一任务两工具并排操作
+5. 课后作业：加密货币监控脚本对比实战",第 1 周,✓ 已录完
+进阶工具,2,Claude Code × Cursor 高级技巧,"1. Subagents 并行作业：隔离上下文跑探索 / 审阅 / 研究，不污染主线
+2. Hooks 入门：SessionStart / UserPromptSubmit / PostToolUse 做个人自动化
+3. Cursor 进阶：Composer、Background Agents、.cursorrules 深挖
+4. Plugins 生态使用：装 ECC / Superpowers 等社区插件直接上手
+5. 课后作业：自定义一个 slash command + 用 subagent 做一次代码审阅",第 2 周,待录
+上下文与能力接入,3,MCP 与外部能力接入,"1. MCP 核心：Tools / Resources / Prompts 三要素
+2. 能力接入：把本地文件 / 数据库 / API 接给 AI
+3. 安全边界：权限控制与风险管理
+4. 现场演示：接入一个 MCP Server 完成任务
+5. 课后作业：为项目接入 MCP 实战",第 2 周,待录
+上下文与能力接入,4,Skill 设计与能力沉淀,"1. 概念辨析：Skill 与 Prompt / 规则 / 工作流的区别
+2. Skill 结构：触发条件 / 输入输出 / 执行步骤
+3. 能力沉淀：把高频任务变成可复用能力
+4. 现场演示：代码审查 / 接口文档 Skill
+5. 课后作业：撰写一个完整的 SKILL.md",第 3 周,待录
+规则、Spec 与工程化,5,规则体系与 Spec 驱动开发,"1. 从 vibe 到 spec：为什么不能直接让 AI 写代码
+2. 三件套：rules / guidelines / spec 各自职责
+3. OpenSpec 工作流：proposal → specs → design → tasks
+4. 现场演示：写 spec + rules，AI 生成实现计划
+5. 课后作业：为功能需求写 spec + 2 条 rules",第 3 周,待录
+规则、Spec 与工程化,6,Harness 设计：让 AI 能持续做事,"1. 核心概念：为 AI 提供稳定环境与任务状态
+2. 四要素：初始化 / 执行 / 检查点 / 上下文交接
+3. 长任务策略：跨上下文窗口持续推进
+4. 现场演示：为跨文件重构设计最小 harness
+5. 课后作业：用 harness 驱动多轮对话任务",第 4 周,待录
+规则、Spec 与工程化,7,Agent 工作流——Claude Code Agent Teams + Hermes Agent,"1. 心智模型：从单 agent 到 agent team
+2. Claude Code Agent Teams（内嵌型）：多 agent 共享 task list、互相对话
+3. Hermes Agent（独立型）：持久记忆 + 多入口 + 模型无关
+4. 选型与组合：何时用哪个，二者怎么叠加
+5. 现场演示：跑一次 PR review + 切 provider；作业二选一",第 4 周,待录
+综合项目实战,8,项目实战一：用 Superpowers 复刻 web3.career,"1. 用 Superpowers 串起整个项目：writing-plans / executing-plans / subagent-driven-development
+2. 前后端联调：Next.js + 后端 API，AI 全程辅助
+3. 现场演示：从 PRD 拆 plan → 分块执行
+4. 作业：选一个模块跑一遍 plan → implement → review 闭环",第 4 周,待录
+综合项目实战,9,项目实战二：用 Claude Agent Teams 做 Polymarket 黑客松,"1. 用 Agent Teams 拆角色并行推进（backend / frontend / reviewer 等）
+2. lead + teammates + 共享 task list 真实落地一个项目
+3. 现场演示：起 3-teammate team 协同跑 Polymarket 一段需求
+4. 作业：起 ≥3 角色的 Agent Team 协同完成一个 feature",第 5 周,待录
+综合项目实战,10,项目实战三：用 Hermes Agent 做 Hyperliquid 黑客松,"1. Hermes 长跑 + 自托管 + 跨平台特性服务真实项目
+2. 持久记忆 + 多入口 + 模型无关在实战中怎么发挥
+3. 现场演示：自动数据拉取 / 推送通知 / 切模型对比
+4. 期末大作业：搭一个 Hermes 长跑 agent 服务 Hyperliquid 项目",第 5 周,待录

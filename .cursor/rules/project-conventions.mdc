@@ -1,0 +1,93 @@
+---
+description: 项目通用约定 - UTC 时间、中文代码注释、学员文档可一步步跟随
+alwaysApply: true
+---
+
+# 项目通用约定
+
+## 1. 时间统一使用 UTC
+
+所有涉及时间的处理（生成、存储、传输、展示、日志）都必须使用 UTC，禁止使用本地时间或 naive datetime。
+
+### Python
+
+```python
+# ❌ BAD - naive 本地时间
+from datetime import datetime
+now = datetime.now()
+ts = datetime.fromtimestamp(item[0] / 1000)
+
+# ✅ GOOD - 显式 UTC 时区
+from datetime import datetime, timezone
+now = datetime.now(timezone.utc)
+ts = datetime.fromtimestamp(item[0] / 1000, tz=timezone.utc)
+```
+
+打印或落库时统一带 `Z` 或 `+00:00` 后缀，避免歧义：
+
+```python
+print(now.strftime("%Y-%m-%d %H:%M:%S UTC"))
+print(now.isoformat())  # e.g. 2026-04-19T08:30:00+00:00
+```
+
+### Pandas
+
+```python
+# ✅ 索引带上 UTC 时区
+df.index = pd.to_datetime(df.index, utc=True)
+```
+
+### Shell / 日志
+
+```bash
+date -u +"%Y-%m-%dT%H:%M:%SZ"
+```
+
+## 2. 代码注释使用中文
+
+所有代码注释（行内注释、函数 docstring、模块说明）一律使用中文，便于团队成员快速理解。
+
+- 标识符（变量名、函数名、类名）保持英文
+- 字符串字面量根据业务需求决定语言
+- 仅注释和文档说明用中文
+
+```python
+# ❌ BAD
+def fetch_btc_klines(interval: str = "1d"):
+    """Fetch BTC/USDT klines from Binance."""
+    # Advance cursor past the last candle
+    ...
+
+# ✅ GOOD
+def fetch_btc_klines(interval: str = "1d"):
+    """从 Binance 获取 BTC/USDT K 线数据，自动分页"""
+    # 把游标推进到上一根 K 线之后，准备拉下一页
+    ...
+```
+
+## 3. 学员可执行的文档必须一步步可跟随
+
+**适用范围**：所有学员会跟着操作的文档 —— `lesson*/README.md`、`lesson*/homework/**/*.md`、`demo/**/prompts/*.md` 等。
+
+**不适用**：`lesson*/讲稿.md`（讲师内部口播稿，目标读者不同）。
+
+### 必备结构
+
+每份学员可执行文档至少包含以下要素，按顺序：
+
+1. **前置条件**：环境/工具/起始状态明确，依赖命令可直接执行
+2. **顺序步骤**：每步一个原子动作，编号清楚，命令/prompt **完整可粘贴**
+3. **预期输出**：每步告诉学员"应当看到什么"，便于自我验证
+4. **清理/回滚**：演示完如何还原（`git restore` 等）
+5. **常见错误排查**：预判最容易卡住的几处，给出排查命令
+
+### 反模式
+
+- ❌ 把"讲师演示记录"和"学员操作步骤"混在一篇里 —— 读者目标不同
+- ❌ 用过去时叙述"我跑了什么" —— 学员搞不清自己该做什么
+- ❌ 路径含糊（"在那个目录下"）、命令省略（"...等"）、prompt 不完整
+- ❌ 跳步，假设读者已经知道前置条件
+
+### 验收标准
+
+**一个没听过这堂课的同事**，凭这份文档能独立跑通且无歧义。如果他需要回头问"这一步是什么意思"——文档就要修。

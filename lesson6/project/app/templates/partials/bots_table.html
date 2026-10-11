@@ -1,0 +1,39 @@
+{% if bots %}
+<div class="metrics" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+{% for b in bots %}
+  {% set p = positions.get(b.id) %}
+  <div class="card" style="margin-bottom: 0;">
+    <div class="row justify-between" style="margin-bottom: 8px;">
+      <a href="/bots/{{ b.id }}" style="font-weight: 600; font-size: 16px;">{{ b.name }}</a>
+      {% with status=b.status.value %}{% include "partials/bot_status.html" %}{% endwith %}
+    </div>
+    <div class="muted" style="font-size: 12px; margin-bottom: 12px;">
+      {{ b.strategy_name }} · {{ b.symbol }} · {{ b.interval }} · {{ {"paper":"纸交易","binance_testnet":"币安测试网"}.get(b.exchange.value, b.exchange.value) }}
+    </div>
+    <table style="margin-bottom: 12px;">
+      <tbody>
+        <tr><td style="color:#64748b;">现金</td><td class="numeric" style="text-align:right;">{{ "%.2f"|format(p.cash if p else 0) }}</td></tr>
+        <tr><td style="color:#64748b;">持仓</td><td class="numeric" style="text-align:right;">{{ "%.6f"|format(p.base_qty if p else 0) }}</td></tr>
+        <tr><td style="color:#64748b;">入场均价</td><td class="numeric" style="text-align:right;">{{ "%.2f"|format(p.avg_entry_price) if p and p.avg_entry_price else "—" }}</td></tr>
+      </tbody>
+    </table>
+    <div class="actions">
+      <a href="/bots/{{ b.id }}" class="btn secondary" style="text-decoration: none;">详情</a>
+      {% if b.status.value == "running" %}
+      <button hx-post="/bots/{{ b.id }}/stop" hx-target="#bots-table" class="secondary">停止</button>
+      {% else %}
+      <button hx-post="/bots/{{ b.id }}/start" hx-target="#bots-table">启动</button>
+      {% endif %}
+      <button hx-delete="/bots/{{ b.id }}" hx-target="#bots-table"
+              hx-confirm="确认删除机器人「{{ b.name }}」？" class="danger">删除</button>
+    </div>
+  </div>
+{% endfor %}
+</div>
+{% else %}
+<div class="empty">
+  <div class="emoji">🤖</div>
+  <div>还没有机器人</div>
+  <div class="hint">点击上方「新建机器人」开始创建第一个交易实例</div>
+</div>
+{% endif %}

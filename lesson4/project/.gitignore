@@ -1,0 +1,7 @@
+# 不进版本库的运行产物
+__pycache__/
+*.pyc
+prices.db
+*.png
+.pytest_cache/
+.ruff_cache/

@@ -1,0 +1,50 @@
+---
+description: 策略代码必须满足的约束。在任意 lessonN/project/strategies/ 下编辑文件时自动应用。
+globs:
+  - "**/strategies/*.py"
+alwaysApply: false
+---
+
+# 策略代码约定
+
+适用于任意 `lessonN/project/strategies/*.py` 下的所有文件（lesson 5 起每节课有独立快照）。
+
+## 函数签名
+
+每个策略文件**必须**导出一个**主函数**，签名严格为：
+
+```python
+def <strategy_name>(df: pd.DataFrame) -> pd.Series:
+    ...
+```
+
+参数：
+- `df`：来自 `backtest.load_ohlc()`，索引为 UTC 时间戳，列含 `open / high / low / close / volume`。
+- 返回值：`pd.Series`，索引同 `df.index`，值 ∈ {-1, 0, +1}。
+
+## 防 lookahead
+
+**禁止**写出"用今日 close 决定今日信号"的代码：
+
+```python
+# ❌ 错：今天的信号读今天的 close
+return (df["close"] > df["close"].rolling(7).mean()).astype(int)
+
+# ✅ 对：今天的信号只基于昨天及以前
+ma = df["close"].rolling(7).mean()
+return (df["close"].shift(1) > ma.shift(1)).astype(int)
+```
+
+> `backtest.run_backtest` 内部也会做一次 `signal.shift(1)`，但你的策略层面**仍然要按"信号决定时不能看未来"写**。两层防御。
+
+## 必须有回测验证
+
+任何策略文件**新增或修改**后，必须当面跑一次：
+
+```python
+from backtest import run_backtest
+from strategies.<your_strategy> import <strategy_name>
+print(run_backtest(<strategy_name>)["summary"])
+```
+
+无 traceback 才算完成。

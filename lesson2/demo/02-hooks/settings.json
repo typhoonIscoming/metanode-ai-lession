@@ -1,0 +1,44 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '--- 当前 git 状态 ---' && git status --short && echo '--- 当前分支 ---' && git branch --show-current && echo '--- 最近 3 次提交 ---' && git log --oneline -3"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[hook] prompt 已提交于 '$(date -u +'%Y-%m-%dT%H:%M:%SZ')' (UTC)'"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "for f in $CLAUDE_FILE_PATHS; do case \"$f\" in *.py) echo \"[hook] ruff 检查 $f\"; ruff check --fix \"$f\" 2>&1 || true ;; esac; done"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PROJECT_DIR/lesson2/demo/02-hooks/scripts/log_tool_use.sh Bash"
+          }
+        ]
+      }
+    ]
+  }
+}

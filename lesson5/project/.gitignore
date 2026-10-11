@@ -1,0 +1,11 @@
+# 不进版本库的运行产物
+__pycache__/
+*.pyc
+prices.db
+*.png
+.pytest_cache/
+.ruff_cache/
+
+# web dashboard 回测产物（PNG 已被 *.png 覆盖，保留 .gitkeep 让目录入库）
+web/static/results/*
+!web/static/results/.gitkeep

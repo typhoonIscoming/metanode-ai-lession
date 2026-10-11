@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg:        #05070d;
+  --color-bg-soft:   #0a0e1a;
+  --color-bg-card:   rgba(255, 255, 255, 0.03);
+  --color-border:    rgba(255, 255, 255, 0.08);
+  --color-border-soft: rgba(255, 255, 255, 0.05);
+  --color-text:      #e5e7eb;
+  --color-text-dim:  #9ca3af;
+  --color-text-muted: #6b7280;
+
+  --color-cyan-glow:    #00f5ff;
+  --color-cyan:         #06b6d4;
+  --color-violet:       #a855f7;
+  --color-violet-glow:  #c084fc;
+  --color-lime:         #84cc16;
+  --color-lime-glow:    #a3e635;
+  --color-rose:         #f43f5e;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --shadow-glow-cyan:   0 0 24px -4px var(--color-cyan-glow), 0 0 1px var(--color-cyan-glow);
+  --shadow-glow-violet: 0 0 24px -4px var(--color-violet-glow), 0 0 1px var(--color-violet-glow);
+}
+
+html, body { background: var(--color-bg); color: var(--color-text); }
+body { font-family: var(--font-sans); font-feature-settings: 'cv11', 'ss01'; }
+
+* { border-color: var(--color-border); }
+
+/* Animated grid background */
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(168, 85, 247, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(6, 182, 212, 0.08) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, #000 30%, transparent 80%);
+  animation: grid-pulse 12s ease-in-out infinite;
+}
+@keyframes grid-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 0.85; }
+}
+
+/* Aurora blob */
+.aurora {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(168, 85, 247, 0.25), transparent 50%),
+    radial-gradient(circle at 80% 0%, rgba(6, 182, 212, 0.25), transparent 50%),
+    radial-gradient(circle at 50% 100%, rgba(132, 204, 22, 0.18), transparent 60%);
+  filter: blur(40px);
+  z-index: -1;
+}
+
+/* Holographic gradient text */
+.holo-text {
+  background: linear-gradient(110deg, #c084fc 0%, #00f5ff 35%, #a3e635 70%, #c084fc 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: holo-pan 8s linear infinite;
+}
+@keyframes holo-pan {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Glass card */
+.glass {
+  background: var(--color-bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  transition: border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.glass:hover {
+  border-color: rgba(0, 245, 255, 0.4);
+  box-shadow: 0 0 0 1px rgba(0, 245, 255, 0.25), 0 0 30px -10px rgba(0, 245, 255, 0.35);
+}
+
+/* Glow button */
+.btn-glow {
+  position: relative;
+  border: 1px solid rgba(0, 245, 255, 0.4);
+  background: linear-gradient(180deg, rgba(0, 245, 255, 0.12), rgba(168, 85, 247, 0.12));
+  color: #e5f9ff;
+  transition: box-shadow .2s ease, transform .1s ease, border-color .2s ease;
+}
+.btn-glow:hover {
+  border-color: rgba(0, 245, 255, 0.8);
+  box-shadow: 0 0 24px -4px rgba(0, 245, 255, 0.6), inset 0 0 12px -4px rgba(0, 245, 255, 0.4);
+  transform: translateY(-1px);
+}
+.btn-glow:active { transform: translateY(0); }
+
+/* Tag chip */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: #a3e635;
+  background: rgba(132, 204, 22, 0.08);
+  border: 1px solid rgba(132, 204, 22, 0.25);
+}
+.chip-cyan   { color: #67e8f9; background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.25); }
+.chip-violet { color: #d8b4fe; background: rgba(168, 85, 247, 0.08); border-color: rgba(168, 85, 247, 0.25); }
+
+/* Scanline overlay */
+.scanline::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 3px,
+    rgba(255, 255, 255, 0.015) 4px
+  );
+  mix-blend-mode: overlay;
+}
+
+/* Reveal on scroll utility */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fade-up .6s ease-out both; }
+
+::selection { background: rgba(0, 245, 255, 0.35); color: #fff; }
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--color-cyan-glow);
+  outline-offset: 2px;
+}

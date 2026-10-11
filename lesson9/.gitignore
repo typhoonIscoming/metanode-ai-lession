@@ -1,0 +1,48 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# build outputs
+dist
+build
+.next
+.turbo
+*.tsbuildinfo
+
+# logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# env / secrets
+.env
+.env.local
+.env.*.local
+
+# docker-compose 本地覆盖（端口冲突等开发者本机配置）
+docker-compose.override.yml
+
+# tooling caches
+.ruff_cache/
+.pytest_cache/
+__pycache__/
+*.pyc
+htmlcov/
+.coverage
+coverage/
+
+# Claude Code 本机配置（约定 .local.json 不入仓）
+.claude/settings.local.json
+
+# editors / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+
+# misc
+*.pid
+*.seed
+*.pid.lock

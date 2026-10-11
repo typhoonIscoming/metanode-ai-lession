@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Binance Token Heatmap</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Binance Spot · Top 100</p>
+          <h1>Token Market Heatmap</h1>
+          <p class="subtitle">后端定时获取 Binance 现货 24h 数据，前端用类似股市热力图的大色块展示 Token 排名、价格和 24h 变化率。</p>
+        </div>
+        <div class="stats">
+          <div><span>更新时间</span><strong id="updatedAt">--</strong></div>
+          <div><span>Token 数</span><strong id="count">--</strong></div>
+          <button id="refreshBtn">立即刷新</button>
+        </div>
+      </header>
+
+      <section class="toolbar">
+        <input id="searchInput" placeholder="搜索 BTC / ETH / SOL..." />
+        <select id="sortSelect">
+          <option value="rank">按成交额排名</option>
+          <option value="changeDesc">涨幅优先</option>
+          <option value="changeAsc">跌幅优先</option>
+        </select>
+        <span id="metricLabel" class="metric-label"></span>
+      </section>
+
+      <section id="status" class="status">加载中...</section>
+      <section id="heatmap" class="heatmap" aria-label="token heatmap"></section>
+    </main>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

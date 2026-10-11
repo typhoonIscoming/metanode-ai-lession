@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}{{ bot.name }} — QuantTrader{% endblock %}
+{% block content %}
+<div class="row justify-between" style="margin-bottom: 8px;">
+  <h1 style="margin: 0;">{{ bot.name }}
+    {% with status=bot.status.value %}{% include "partials/bot_status.html" %}{% endwith %}
+  </h1>
+  <div class="actions">
+    {% if bot.status.value == "running" %}
+    <form method="post" action="/bots/{{ bot.id }}/stop" style="display: inline;">
+      <button class="secondary">停止</button>
+    </form>
+    {% elif bot.status.value != "deleted" %}
+    <form method="post" action="/bots/{{ bot.id }}/start" style="display: inline;">
+      <button>启动</button>
+    </form>
+    {% endif %}
+    <a href="/bots" class="btn secondary" style="text-decoration: none;">返回列表</a>
+  </div>
+</div>
+<div class="muted" style="margin-bottom: 20px;">
+  {{ bot.strategy_name }} · {{ bot.symbol }} · {{ bot.interval }} ·
+  {{ {"paper":"纸交易","binance_testnet":"币安测试网"}.get(bot.exchange.value, bot.exchange.value) }} ·
+  初始资金 <span class="numeric">{{ "%.2f"|format(bot.initial_capital) }}</span>
+</div>
+
+<div class="section">
+  <div class="section-title">资金概要</div>
+  <div class="metrics">
+    <div class="metric">
+      <div class="label">现金</div>
+      <div class="value">{{ "%.2f"|format(position.cash if position else 0) }}</div>
+    </div>
+    <div class="metric">
+      <div class="label">持仓数量</div>
+      <div class="value">{{ "%.6f"|format(position.base_qty if position else 0) }}</div>
+    </div>
+    <div class="metric">
+      <div class="label">入场均价</div>
+      <div class="value">{{ "%.2f"|format(position.avg_entry_price) if position and position.avg_entry_price else "—" }}</div>
+    </div>
+    <div class="metric">
+      <div class="label">当前权益</div>
+      <div class="value">{{ "%.2f"|format(latest_equity) if latest_equity is not none else "—" }}</div>
+      {% if pct_change is not none %}
+      <div class="sub {% if pct_change >= 0 %}pnl-up{% else %}pnl-down{% endif %}">
+        {% if pct_change >= 0 %}+{% endif %}{{ "%.2f%%"|format(pct_change) }}
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% if equity_png_name %}
+<div class="section">
+  <div class="section-title">资金曲线</div>
+  <div class="card">
+    <img class="chart" src="/static/{{ equity_png_name }}" alt="资金曲线">
+  </div>
+</div>
+{% endif %}
+
+<div class="grid-2">
+  <div class="section">
+    <div class="section-title">最近成交（最近 20 条）</div>
+    {% if fills %}
+    <table>
+      <thead><tr><th>时间</th><th>订单</th><th>价格</th><th>数量</th><th>手续费</th></tr></thead>
+      <tbody>
+      {% for f in fills %}
+        <tr>
+          <td class="numeric" style="font-size: 12px;">{{ f.filled_at }}</td>
+          <td class="numeric">{{ f.order_id }}</td>
+          <td class="numeric">{{ "%.2f"|format(f.price) }}</td>
+          <td class="numeric">{{ "%.6f"|format(f.quantity) }}</td>
+          <td class="numeric">{{ "%.4f"|format(f.fee) }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty"><div class="emoji">📭</div><div>暂无成交</div></div>
+    {% endif %}
+  </div>
+
+  <div class="section">
+    <div class="section-title">最近 tick（最近 20 条）</div>
+    {% if tick_logs %}
+    <table>
+      <thead><tr><th>时间</th><th>状态</th><th>消息</th></tr></thead>
+      <tbody>
+      {% for t in tick_logs %}
+        <tr>
+          <td class="numeric" style="font-size: 12px;">{{ t.tick_at }}</td>
+          <td>{% with status=t.status.value %}<span class="badge status-{{ status }}">{{ {"success":"成功","skipped":"跳过","errored":"异常"}.get(status, status) }}</span>{% endwith %}</td>
+          <td style="font-size: 12px;">{{ t.message }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty"><div class="emoji">⏱</div><div>暂无 tick 记录</div></div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

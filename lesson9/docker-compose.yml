@@ -1,0 +1,76 @@
+# Polymarket BTC 套利信号工具 · 本地一键起
+#
+# 拓扑：
+#   db (postgres:16) ← backend (FastAPI + APScheduler) ← frontend (Next.js)
+# 全部端口绑 127.0.0.1，不对外暴露。
+# 启动顺序由 healthcheck + depends_on 保证：
+#   db healthy → backend 自动跑 alembic upgrade head + uvicorn → frontend
+#
+# 用法：
+#   1) cp .env.example .env，按需填 BOOTSTRAP_* 密钥（也可以启动后在 /settings 页面配）
+#   2) docker compose up -d
+#   3) curl http://127.0.0.1:8000/api/v1/healthz   # backend 探活
+#   4) 浏览器开 http://127.0.0.1:3000              # 前端
+#   5) docker compose logs -f backend              # 看启动迁移与请求日志
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: btc_arb
+      POSTGRES_PASSWORD: btc_arb
+      POSTGRES_DB: btc_arb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U btc_arb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "127.0.0.1:5432:5432"
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      # 覆盖 .env 里指向 localhost 的 DATABASE_URL，在容器网内必须用服务名 db
+      DATABASE_URL: postgresql+asyncpg://btc_arb:btc_arb@db:5432/btc_arb
+      APP_HOST: 0.0.0.0
+      APP_PORT: "8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8000:8000"
+    command:
+      - sh
+      - -c
+      - "alembic upgrade head && uvicorn btc_arb.main:app --host 0.0.0.0 --port 8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/api/v1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000/api/v1
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3000:3000"
+    restart: unless-stopped
+
+volumes:
+  pgdata:

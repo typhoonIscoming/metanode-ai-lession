@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>量化策略 Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#ecfdf5',
+              500: '#10b981',
+              600: '#059669',
+              700: '#047857',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* 让数字等宽，指标卡看起来更整齐 */
+    .num { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
+
+  <!-- 顶部 hero -->
+  <header class="bg-gradient-to-br from-brand-600 to-brand-700 text-white">
+    <div class="max-w-5xl mx-auto px-6 py-10">
+      <h1 class="text-3xl font-bold tracking-tight">量化策略 Dashboard</h1>
+      <p class="mt-2 text-brand-50/90">
+        选策略 → 选标的 → 选 K 线根数 → 点 <span class="font-semibold">运行回测</span>，立即看到指标、累计收益曲线和中文总结。
+      </p>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-6 py-8 space-y-6">
+
+    <!-- 表单卡 -->
+    <section class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6">
+      <h2 class="text-lg font-semibold mb-4">运行参数</h2>
+      <form id="backtest-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">策略</label>
+          <select id="f-strategy" name="strategy"
+                  class="w-full rounded-lg border-slate-300 bg-white py-2 px-3 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+            {% for s in strategies %}
+              <option value="{{ s }}">{{ s }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">标的</label>
+          <select id="f-symbol" name="symbol"
+                  class="w-full rounded-lg border-slate-300 bg-white py-2 px-3 shadow-sm focus:border-brand-500 focus:ring-brand-500">
+            <option value="BTCUSDT">BTCUSDT</option>
+            <option value="ETHUSDT">ETHUSDT</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-1">K 线根数（日 K）</label>
+          <input id="f-limit" name="limit" type="number" min="30" max="365" value="90"
+                 class="w-full rounded-lg border-slate-300 py-2 px-3 shadow-sm focus:border-brand-500 focus:ring-brand-500" />
+        </div>
+
+        <div>
+          <button id="run-btn" type="submit"
+                  class="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 px-4 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed">
+            <span id="run-label">运行回测</span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- 错误 banner -->
+    <div id="error-banner"
+         class="hidden bg-red-50 ring-1 ring-red-200 text-red-800 rounded-xl p-4">
+      <p class="font-medium">回测失败</p>
+      <p id="error-text" class="text-sm mt-1"></p>
+    </div>
+
+    <!-- 结果区 -->
+    <section id="result-section" class="hidden space-y-6">
+
+      <!-- 指标卡 -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-4">
+          <p class="text-xs uppercase tracking-wider text-slate-500">Sharpe</p>
+          <p id="m-sharpe" class="num text-2xl font-semibold mt-1">—</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-4">
+          <p class="text-xs uppercase tracking-wider text-slate-500">最大回撤</p>
+          <p id="m-mdd" class="num text-2xl font-semibold mt-1">—</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-4">
+          <p class="text-xs uppercase tracking-wider text-slate-500">胜率</p>
+          <p id="m-win" class="num text-2xl font-semibold mt-1">—</p>
+        </div>
+        <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-4">
+          <p class="text-xs uppercase tracking-wider text-slate-500">累计收益</p>
+          <p id="m-cum" class="num text-2xl font-semibold mt-1">—</p>
+        </div>
+      </div>
+
+      <!-- 曲线 + 总结 -->
+      <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200 p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">累计收益曲线</h2>
+          <p id="meta-line" class="text-sm text-slate-500"></p>
+        </div>
+        <img id="png" alt="cumulative return chart" class="w-full rounded-lg ring-1 ring-slate-200" />
+        <p id="summary" class="text-slate-700 leading-relaxed"></p>
+      </div>
+
+    </section>
+
+    <footer class="text-center text-xs text-slate-400 pt-4">
+      backtest.run_backtest 提供指标；UI 仅做展示。本地用 · 公网勿暴露 debug 模式。
+    </footer>
+  </main>
+
+  <script>
+    // 格式化辅助：百分比、Sharpe 两位小数
+    const pct = (v) => `${(v * 100).toFixed(2)}%`;
+    const num = (v) => Number(v).toFixed(2);
+
+    const $ = (id) => document.getElementById(id);
+    const form = $('backtest-form');
+    const runBtn = $('run-btn');
+    const runLabel = $('run-label');
+    const errBanner = $('error-banner');
+    const errText = $('error-text');
+    const resultSec = $('result-section');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errBanner.classList.add('hidden');
+
+      const payload = {
+        strategy: $('f-strategy').value,
+        symbol: $('f-symbol').value,
+        limit: parseInt($('f-limit').value, 10),
+      };
+
+      runBtn.disabled = true;
+      runLabel.textContent = '运行中…';
+
+      try {
+        const res = await fetch('/api/backtest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const body = await res.json();
+        if (!res.ok) {
+          throw new Error(body.error || `请求失败：HTTP ${res.status}`);
+        }
+
+        $('m-sharpe').textContent = num(body.sharpe);
+        $('m-mdd').textContent = pct(body.max_drawdown);
+        $('m-win').textContent = pct(body.win_rate);
+        $('m-cum').textContent = pct(body.cumulative_return);
+        // 加 cache-buster 避免浏览器缓存住前一次的 PNG
+        $('png').src = `${body.png_url}?t=${Date.now()}`;
+        $('summary').textContent = body.summary;
+        $('meta-line').textContent = `${body.strategy} · ${body.symbol} · ${body.rows} 根 K 线`;
+        resultSec.classList.remove('hidden');
+      } catch (err) {
+        errText.textContent = err.message || String(err);
+        errBanner.classList.remove('hidden');
+      } finally {
+        runBtn.disabled = false;
+        runLabel.textContent = '运行回测';
+      }
+    });
+  </script>
+
+</body>
+</html>

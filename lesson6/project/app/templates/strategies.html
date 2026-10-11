@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}策略库 — QuantTrader{% endblock %}
+{% block content %}
+<h1>策略库</h1>
+<p class="muted">当前内置 {{ strategies|length }} 个策略。所有策略统一签名 <code>strategy(df, **params) -> Series ∈ {-1, 0, +1}</code>。</p>
+
+<div class="metrics">
+  {% for s in strategies %}
+  <div class="metric">
+    <div class="label">{{ s.name }}</div>
+    <div class="value" style="font-size: 14px; font-family: inherit; font-weight: 500; color: #1f2937; line-height: 1.5;">
+      {{ s.description }}
+    </div>
+    <div class="sub muted">默认参数：</div>
+    <table style="margin-top: 6px;">
+      <tbody>
+        {% for k, v in s.defaults.items() %}
+        <tr><td style="color: #64748b;">{{ k }}</td><td class="numeric">{{ v }}</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

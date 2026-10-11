@@ -1,0 +1,23 @@
+---
+description: Python 专属规则 —— 仅在编辑 .py 文件时注入
+globs:
+  - "**/*.py"
+---
+
+# Python 编码规则
+
+## 类型注解
+
+- 公开函数（不带下划线前缀）必须有完整类型注解
+- 内部 helper 可以不写，但建议写
+
+## 依赖管理
+
+- 标准库优先，能不引第三方就不引
+- 要引第三方时，先在 `pyproject.toml` 或 `requirements.txt` 声明，禁止直接 `pip install` 后忘了登记
+
+## 测试
+
+- 测试文件命名：`test_<module>.py`，放在 `tests/` 下或 `<module>` 同目录
+- 用 pytest，不用 unittest
+- 测试不允许真发网络请求，必要时用 `responses` / `httpx-mock`

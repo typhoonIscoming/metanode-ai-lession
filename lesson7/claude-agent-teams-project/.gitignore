@@ -1,0 +1,23 @@
+# 顶层运行时产物 / 缓存（frontend、backend 各有自己的 .gitignore 处理子目录）
+
+# 工具缓存
+.ruff_cache/
+.pytest_cache/
+__pycache__/
+*.pyc
+
+# 本机配置（Claude Code 约定 .local.json 不入仓）
+.claude/settings.local.json
+
+# 环境
+.env
+.env.local
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/*
+!.vscode/extensions.json
+.idea/

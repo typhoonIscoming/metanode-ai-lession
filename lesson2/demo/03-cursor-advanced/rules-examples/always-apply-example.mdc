@@ -1,0 +1,24 @@
+---
+description: 全局编码规范 —— 每次对话都注入
+alwaysApply: true
+---
+
+# 全局编码规范
+
+## 时间处理
+
+所有时间相关代码必须使用 UTC：
+
+- Python：`datetime.now(timezone.utc)`、`datetime.fromtimestamp(x, tz=timezone.utc)`
+- pandas：`pd.to_datetime(..., utc=True)`
+- 日志输出带 `Z` 或 `+00:00` 后缀
+
+## 注释语言
+
+- 注释、docstring：中文
+- 标识符（变量、函数、类名）：英文
+- 字符串字面量：跟业务走，不强制
+
+## 例外处理
+
+不允许裸 `except:`。要么明确异常类型，要么 `except Exception as e: logger.exception(...)`。

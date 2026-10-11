@@ -1,0 +1,17 @@
+# 不进版本库的运行产物
+__pycache__/
+*.pyc
+prices.db
+quant.db
+quant.db-*
+*.png
+.pytest_cache/
+.ruff_cache/
+.env
+app/logs/
+.coverage
+coverage.json
+htmlcov/
+
+# 审查/代理产物（实施过程中可能写入）
+.claude/PRPs/
